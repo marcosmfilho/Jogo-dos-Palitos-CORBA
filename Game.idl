@@ -1,0 +1,17 @@
+module GamePalitos{
+	interface GamePalitosServer {
+  		void registraCliente(in string nomeCliente);
+      void mensagemBroadCast(in string mensagem);
+      void pedePalitos();
+      void pedePalpite();
+      void somaPalitos(in long palitos);
+      void verificaPalpite(in long palpite);
+	};
+
+	typedef sequence<string> names;
+	interface GamePalitosCliente {
+      void novaMensagem(in string mensagem);
+      void escolhePalitos();
+      void escolhePalpite();
+	};
+};
