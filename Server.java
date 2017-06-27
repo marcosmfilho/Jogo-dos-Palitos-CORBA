@@ -77,6 +77,7 @@ public class Server extends GamePalitosServerPOA {
 
 
     public void pedePalpite(String clienteTurno){
+        System.out.println("Foi pedido o palpite do cliente " + clienteTurno);
         for (Map.Entry <String, GamePalitosCliente> cliente : clientesRef.entrySet()) {
             if(cliente.getKey() == this.clienteTurno){
                 cliente.getValue().pedePalitos();
@@ -107,14 +108,15 @@ public class Server extends GamePalitosServerPOA {
     public void verificaPalpites(){
         mensagemBroadCast("O número total acumulado foi: " + this.somaPalitos);
         for (Map.Entry <String, Integer> palpiteRodada : clientesPalpites.entrySet()) {
-            if (clientesPalpites.getValue() == this.somaPalitos) {
-                System.out.println("Palpite do cliente " + clientesPalpites.getKey() + " está correto");
+            mensagemBroadCast("Palpite do jogador " + palpiteRodada.getKey() + " foi: " + palpiteRodada.getValue());
+            if (palpiteRodada.getValue() == this.somaPalitos) {
+                System.out.println("Palpite do cliente " + palpiteRodada.getKey() + " está correto");
                 //Aqui eu retiro um palito do cliente
                 //Verifico se alguém zerou os palitos
-                //Se sim, remove do array de jogadores no jogo
+                //Se sim, remove do array de jogadores no jogo (se for o ultimo, atualiza o ultimo jogador, se for do turno também)
                 //Se não, continua o jogo
             }else{
-                System.out.println("Palpite do cliente " + clientesPalpites.getKey() + " está errado");
+                System.out.println("Palpite do cliente " + palpiteRodada.getKey() + " está errado");
             }
         }
         System.out.println("Chegando aqui estou satisfeito até agora");
@@ -147,15 +149,6 @@ public class Server extends GamePalitosServerPOA {
     };
 
     public void init(){
-        //  Cliente escolhe a quantidade de palitos
-        //  Servidor calcula a soma
-        //  Servidor pede os palpites
-        //  Clientes mandam os palpites
-        //  Verifica se o jogo acabou, ou seja, se só sobrou um jogador
-        //  Se acabou, mostra o vencedor e o perdedor
-        //  Se o jogo não acabou e algum cliente acertar seta os palitos dele com -1
-        //  Volta para a escolha dos palitos
-
         pedePalitos();
         pedePalpite(this.clienteTurno);
     };
