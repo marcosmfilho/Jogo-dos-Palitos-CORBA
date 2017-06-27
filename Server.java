@@ -3,7 +3,7 @@ import org.omg.CosNaming.*;
 import org.omg.CORBA.*;
 import org.omg.PortableServer.*;
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -27,7 +27,7 @@ public class Server extends GamePalitosServerPOA {
 
     public void registraCliente(String nomeCliente){
         clientesNojogo.add(nomeCliente);
-        int numeroClientes = clientes.size();
+        int numeroClientes = clientesNojogo.size();
         if(numeroClientes <= this.maximoClientes){
             try{
                 referenciaCliente(nomeCliente);
@@ -38,6 +38,7 @@ public class Server extends GamePalitosServerPOA {
             System.out.println("Clinte " + nomeCliente + " registrado com sucesso!");
             switch (numeroClientes) {
                 case 1:
+                    this.clienteTurno = nomeCliente;
                     mensagemBroadCast("Aguardando mais 3 jogadores na sala...");
                     break;
                 case 2:
@@ -48,7 +49,6 @@ public class Server extends GamePalitosServerPOA {
                     break;
                 case 4:
                     mensagemBroadCast("Finalmente 4 jogadores, o jogo será iniciado...");
-                    mensagemBroadCast("Quantos palitos tem na sua mão direita?");
                     this.ultimoClienteJogada = nomeCliente;
                     init();
                     break;
@@ -65,7 +65,7 @@ public class Server extends GamePalitosServerPOA {
 
     public void pedePalitos(){
         for (Map.Entry <String, GamePalitosCliente> cliente : clientesRef.entrySet()) {
-            cliente.getValue().pedePalitos();
+            cliente.getValue().escolhePalitos();
         }
     };
 
@@ -81,7 +81,7 @@ public class Server extends GamePalitosServerPOA {
         System.out.println("Foi pedido o palpite do cliente " + clienteTurno);
         for (Map.Entry <String, GamePalitosCliente> cliente : clientesRef.entrySet()) {
             if(cliente.getKey() == this.clienteTurno){
-                cliente.getValue().pedePalitos();
+                cliente.getValue().escolhePalpite();
             }
         }
     };
@@ -90,12 +90,13 @@ public class Server extends GamePalitosServerPOA {
     //pede o palpite do próximo
     public void recebePalpite(String nomeCliente, int palpite){
         for (Map.Entry <String, GamePalitosCliente> cliente : clientesRef.entrySet()) {
-            if (cliente.getKey() == nomeCliente) {
+            if (cliente.getKey().equals(nomeCliente.trim())) {
                 this.clientesPalpites.put(nomeCliente,palpite);
                 //Se o cliente foi o último a dar palpite, começa a verificação dos palpites
-                if(nomeCliente == this.ultimoClienteJogada){
+                if(nomeCliente.trim().equals(this.ultimoClienteJogada)){
                     alteraTurno();
                     verificaPalpites();
+                    break;
                 }else{
                     //Se não for último jogador altera o turno e pede um novo palpite
                     alteraTurno();
@@ -109,18 +110,28 @@ public class Server extends GamePalitosServerPOA {
         mensagemBroadCast("O número total acumulado foi: " + this.somaPalitos);
         for (Map.Entry <String, Integer> palpiteRodada : clientesPalpites.entrySet()) {
             mensagemBroadCast("Palpite do jogador " + palpiteRodada.getKey() + " foi: " + palpiteRodada.getValue());
-            if (palpiteRodada.getValue() == this.somaPalitos) {
+            if (palpiteRodada.getValue().equals(this.somaPalitos)) {
                 System.out.println("Palpite do cliente " + palpiteRodada.getKey() + " está correto");
-                //Aqui eu retiro um palito do cliente
-                //Verifico se alguém zerou os palitos
-                //Se sim, remove do array de jogadores no jogo (se for o ultimo, atualiza o ultimo jogador, se for do turno também)
-                //Se não, continua o jogo, ou seja, reinicia os valores e chama o init();
             }else{
                 System.out.println("Palpite do cliente " + palpiteRodada.getKey() + " está errado");
             }
         }
-        System.out.println("Chegando aqui estou satisfeito até agora");
-        System.out.println("Todos os jogadores deram os palpites de um por um pelo turno");
+        novaRodada();
+    };
+
+    public void novaRodada(){
+        mensagemBroadCast("");
+        mensagemBroadCast("***************************************");
+        mensagemBroadCast("************* NOVA RODADA *************");
+        mensagemBroadCast("***************************************");
+        mensagemBroadCast("");
+        reiniciaValores();
+        init();
+    }
+
+    public void init(){
+        pedePalitos();
+        pedePalpite(this.clienteTurno);
     };
 
     //altera o turno para o próximo da lista dos clientes que estão no jogo
@@ -131,6 +142,7 @@ public class Server extends GamePalitosServerPOA {
             for(int i=0;i<=clientesNojogo.size();i++){
                 if(this.clienteTurno == clientesNojogo.get(i)){
                     this.clienteTurno = clientesNojogo.get(i+1);
+                    System.out.println("chegou aqui, novo turno: " + this.clienteTurno);
                     break;
                 }
             }
@@ -148,10 +160,6 @@ public class Server extends GamePalitosServerPOA {
         this.clientesRef.put(nomeCliente,GamePalitosClienteHelper.narrow(clienteRef));
     };
 
-    public void init(){
-        pedePalitos();
-        pedePalpite(this.clienteTurno);
-    };
 
     public void initServer(String args[]){
         try{

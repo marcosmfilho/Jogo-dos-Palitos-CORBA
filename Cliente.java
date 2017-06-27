@@ -25,20 +25,23 @@ public class Cliente extends GamePalitosClientePOA{
       this.palitos = 3;
       org.omg.CORBA.Object clienteRef = this.rootPOA.servant_to_reference(this);
       this.naming.rebind(new NameComponent[]{new NameComponent(nome, "")}, clienteRef);
-      System.out.println("Cliente " + this.nomeCliente + " registrado");
   };
 
   // busca a referência do servidor no servidor de nomes
   public void buscaServidor(String nomeServidor) throws Exception{
       org.omg.CORBA.Object serverRef = this.naming.resolve(new NameComponent[]{new NameComponent(nomeServidor, "")});
       this.server = GamePalitosServerHelper.narrow(serverRef);
-      System.out.println("Servidor encontrado com sucesso");
   };
 
   // Registra a referência do cliente no Servidor e inicia o ORB
   public void inicializaConexao() throws Exception{
       this.rootPOA.the_POAManager().activate();
       this.server.registraCliente(this.nomeCliente);
+      System.out.println("");
+      System.out.println("***************************************");
+      System.out.println("** CONEXÃO ESTABELECIDA COM SUCESSO ***");
+      System.out.println("***************************************");
+      System.out.println("");
       this.orb.run();
   };
 
@@ -47,14 +50,23 @@ public class Cliente extends GamePalitosClientePOA{
   };
 
   public void escolhePalitos(){
+      System.out.println("");
+      System.out.println("***************************************");
+      System.out.println("***** ESCOLHA O NÚMERO DE PALITOS *****");
+      System.out.println("***************************************");
+      System.out.println("");
       Scanner entradaPalitos = new Scanner(System.in);
       int palitos = entradaPalitos.nextInt();
       this.server.somaPalitos(palitos);
   };
 
   public void escolhePalpite(){
+      System.out.println("");
+      System.out.println("***************************************");
+      System.out.println("*** QUAL SEU PALPITE PARA A RODADA? ***");
+      System.out.println("***************************************");
+      System.out.println("");
       Scanner entradaPalpite = new Scanner(System.in);
-      System.out.println("Qual o seu palpite da rodada?");
       int palpite = entradaPalpite.nextInt();
       this.server.recebePalpite(this.nomeCliente,palpite);
   };

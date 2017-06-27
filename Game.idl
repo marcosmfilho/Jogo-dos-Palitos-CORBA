@@ -3,9 +3,12 @@ module GamePalitos{
   	  void registraCliente(in string nomeCliente);
       void mensagemBroadCast(in string mensagem);
       void pedePalitos();
-      void pedePalpite();
+      void pedePalpite(in string nomeCliente);
+	  void recebePalpite(in string nomeCliente, in long palitos);
 	  void verificaPalpites();
       void somaPalitos(in long palitos);
+	  void alteraTurno();
+	  void reiniciaValores();
 	};
 
 	typedef sequence<string> names;
