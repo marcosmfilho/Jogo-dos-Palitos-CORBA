@@ -4,11 +4,14 @@ module GamePalitos{
       void mensagemBroadCast(in string mensagem);
       void pedePalitos();
       void pedePalpite(in string nomeCliente);
-	  void recebePalpite(in string nomeCliente, in long palitos);
-	  void verificaPalpites();
+		  void recebePalpite(in string nomeCliente, in long palitos);
+		  void verificaPalpites();
       void somaPalitos(in long palitos);
-	  void alteraTurno();
-	  void reiniciaValores();
+		  void alteraTurno();
+		  void reiniciaValores();
+			void retiraUmPalito(in string nomeCliente);
+			void verificaVenceu(in string nomeCliente);
+			long buscaQuantidadePalitos(in string nomeCliente);
 	};
 
 	typedef sequence<string> names;
@@ -16,5 +19,7 @@ module GamePalitos{
       void novaMensagem(in string mensagem);
       void escolhePalitos();
       void escolhePalpite();
+			void removePalito();
+			long getPalitos();
 	};
 };

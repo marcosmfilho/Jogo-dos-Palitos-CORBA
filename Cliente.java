@@ -36,12 +36,12 @@ public class Cliente extends GamePalitosClientePOA{
   // Registra a referência do cliente no Servidor e inicia o ORB
   public void inicializaConexao() throws Exception{
       this.rootPOA.the_POAManager().activate();
-      this.server.registraCliente(this.nomeCliente);
       System.out.println("");
       System.out.println("***************************************");
       System.out.println("** CONEXÃO ESTABELECIDA COM SUCESSO ***");
       System.out.println("***************************************");
       System.out.println("");
+      this.server.registraCliente(this.nomeCliente);
       this.orb.run();
   };
 
@@ -50,15 +50,18 @@ public class Cliente extends GamePalitosClientePOA{
   };
 
   public void escolhePalitos(){
-      System.out.println("");
-      System.out.println("***************************************");
-      System.out.println("***** ESCOLHA O NÚMERO DE PALITOS *****");
-      System.out.println("***************************************");
-      System.out.println("");
       Scanner entradaPalitos = new Scanner(System.in);
       int palitos = entradaPalitos.nextInt();
       this.server.somaPalitos(palitos);
   };
+
+  public void removePalito(){
+      this.palitos--;
+  }
+
+  public int getPalitos(){
+      return this.palitos;
+  }
 
   public void escolhePalpite(){
       System.out.println("");
