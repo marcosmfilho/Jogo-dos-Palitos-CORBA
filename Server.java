@@ -56,6 +56,7 @@ public class Server extends GamePalitosServerPOA {
         }
     };
 
+    //tá faltando alterar o broadcast para ser enviado apenas para quem está no jogo
     public void mensagemBroadCast(String mensagem){
         for (Map.Entry <String, GamePalitosCliente> cliente : clientesRef.entrySet()) {
             cliente.getValue().novaMensagem(mensagem);
@@ -95,7 +96,6 @@ public class Server extends GamePalitosServerPOA {
                 if(nomeCliente == this.ultimoClienteJogada){
                     alteraTurno();
                     verificaPalpites();
-                    break;
                 }else{
                     //Se não for último jogador altera o turno e pede um novo palpite
                     alteraTurno();
@@ -114,7 +114,7 @@ public class Server extends GamePalitosServerPOA {
                 //Aqui eu retiro um palito do cliente
                 //Verifico se alguém zerou os palitos
                 //Se sim, remove do array de jogadores no jogo (se for o ultimo, atualiza o ultimo jogador, se for do turno também)
-                //Se não, continua o jogo
+                //Se não, continua o jogo, ou seja, reinicia os valores e chama o init();
             }else{
                 System.out.println("Palpite do cliente " + palpiteRodada.getKey() + " está errado");
             }
