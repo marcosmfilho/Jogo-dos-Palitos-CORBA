@@ -44,20 +44,20 @@ public class Cliente extends GamePalitosClientePOA{
 
   public void novaMensagem(String mensagem){
       System.out.println(mensagem);
-  }
+  };
 
   public void escolhePalitos(){
       Scanner entradaPalitos = new Scanner(System.in);
       int palitos = entradaPalitos.nextInt();
       this.server.somaPalitos(palitos);
-  }
+  };
 
   public void escolhePalpite(){
       Scanner entradaPalpite = new Scanner(System.in);
       System.out.println("Qual o seu palpite da rodada?");
       int palpite = entradaPalpite.nextInt();
       this.server.recebePalpite(this.nomeCliente,palpite);
-  }
+  };
 
   // inicializa o cliente e conecta ao servidor
   public void initCliente(String args[]){
