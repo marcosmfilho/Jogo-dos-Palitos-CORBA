@@ -40,6 +40,7 @@ public class Cliente extends GamePalitosClientePOA{
       System.out.println("***************************************");
       System.out.println("** CONEXÃO ESTABELECIDA COM SUCESSO ***");
       System.out.println("***************************************");
+      System.out.println("Aguarde o jogo ser iniciado, nós o avisaremos...");
       System.out.println("");
       this.server.registraCliente(this.nomeCliente);
       this.orb.run();
@@ -47,6 +48,10 @@ public class Cliente extends GamePalitosClientePOA{
 
   public void novaMensagem(String mensagem){
       System.out.println(mensagem);
+  };
+
+  public void novaMensagemSemQuebra(String mensagem){
+      System.out.print(mensagem);
   };
 
   public void escolhePalitos(){
@@ -57,7 +62,6 @@ public class Cliente extends GamePalitosClientePOA{
           System.out.print("Escolha a quantidade de palitos novamente: ");
           escolhePalitos();
       }else{
-          System.out.println("Sucesso! Aguarde a sua vez de dar o palpite...");
           this.server.somaPalitos(palitos);
       }
   };
