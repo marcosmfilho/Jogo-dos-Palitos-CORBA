@@ -52,7 +52,13 @@ public class Cliente extends GamePalitosClientePOA{
   public void escolhePalitos(){
       Scanner entradaPalitos = new Scanner(System.in);
       int palitos = entradaPalitos.nextInt();
-      this.server.somaPalitos(palitos);
+      if(palitos < 0 || palitos > this.palitos){
+          System.out.println("Valor inválido, seu número de palitos é " + this.palitos);
+          System.out.print("Escolha a quantidade de palitos novamente: ");
+          escolhePalitos();
+      }else{
+          this.server.somaPalitos(palitos);
+      }
   };
 
   public void removePalito(){
