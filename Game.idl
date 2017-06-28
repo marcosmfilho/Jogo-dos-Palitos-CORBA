@@ -2,6 +2,7 @@ module GamePalitos{
 	interface GamePalitosServer {
   	  void registraCliente(in string nomeCliente);
       void mensagemBroadCast(in string mensagem);
+			void mensagemBroadCastNoJogo(in string mensagem);
       void pedePalitos();
       void pedePalpite(in string nomeCliente);
 		  void recebePalpite(in string nomeCliente, in long palitos);
@@ -12,6 +13,7 @@ module GamePalitos{
 			void retiraUmPalito(in string nomeCliente);
 			void verificaVenceu(in string nomeCliente);
 			long buscaQuantidadePalitos(in string nomeCliente);
+			boolean verificaEstaNoJogo(in string nomeCliente);
 	};
 
 	typedef sequence<string> names;

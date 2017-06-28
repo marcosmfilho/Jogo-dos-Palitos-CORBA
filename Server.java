@@ -39,16 +39,16 @@ public class Server extends GamePalitosServerPOA {
             switch (numeroClientes) {
                 case 1:
                     this.clienteTurno = nomeCliente;
-                    // mensagemBroadCast("Aguardando mais 3 jogadores na sala...");
+                    // mensagemBroadCastNoJogo("Aguardando mais 3 jogadores na sala...");
                     break;
                 case 2:
-                    // mensagemBroadCast("Aguardando mais 2 jogadores na sala...");
+                    // mensagemBroadCastNoJogo("Aguardando mais 2 jogadores na sala...");
                     break;
                 case 3:
-                    // mensagemBroadCast("Aguardando mais 1 jogador na sala...");
+                    // mensagemBroadCastNoJogo("Aguardando mais 1 jogador na sala...");
                     break;
                 case 4:
-                    mensagemBroadCast("Finalmente 4 jogadores, o jogo será iniciado...");
+                    mensagemBroadCastNoJogo("Finalmente 4 jogadores, o jogo será iniciado...");
                     this.ultimoClienteJogada = nomeCliente;
                     init();
                     break;
@@ -56,7 +56,24 @@ public class Server extends GamePalitosServerPOA {
         }
     };
 
-    //tá faltando alterar o broadcast para ser enviado apenas para quem está no jogo
+    public boolean verificaEstaNoJogo(String nomeCliente){
+        if(this.clientesNojogo.contains(nomeCliente)){
+            return true;
+        }else{
+            return false;
+        }
+    };
+
+    //boradcast para todos os jogadores no jogo
+    public void mensagemBroadCastNoJogo(String mensagem){
+        for (Map.Entry <String, GamePalitosCliente> cliente : clientesRef.entrySet()) {
+            if(verificaEstaNoJogo(cliente.getKey())){
+                cliente.getValue().novaMensagem(mensagem);
+            }
+        }
+    };
+
+    //boradcast para todos os jogadores, que estejam ainda jogando ou não
     public void mensagemBroadCast(String mensagem){
         for (Map.Entry <String, GamePalitosCliente> cliente : clientesRef.entrySet()) {
             cliente.getValue().novaMensagem(mensagem);
@@ -64,13 +81,15 @@ public class Server extends GamePalitosServerPOA {
     };
 
     public void pedePalitos(){
-        mensagemBroadCast("");
-        mensagemBroadCast("***************************************");
-        mensagemBroadCast("***** ESCOLHA O NÚMERO DE PALITOS *****");
-        mensagemBroadCast("***************************************");
-        mensagemBroadCast("");
+        mensagemBroadCastNoJogo("");
+        mensagemBroadCastNoJogo("***************************************");
+        mensagemBroadCastNoJogo("***** ESCOLHA O NÚMERO DE PALITOS *****");
+        mensagemBroadCastNoJogo("***************************************");
+        mensagemBroadCastNoJogo("");
         for (Map.Entry <String, GamePalitosCliente> cliente : clientesRef.entrySet()) {
-            cliente.getValue().escolhePalitos();
+            if(verificaEstaNoJogo(cliente.getKey())){
+                cliente.getValue().escolhePalitos();
+            }
         }
     };
 
@@ -86,7 +105,9 @@ public class Server extends GamePalitosServerPOA {
         System.out.println("Foi pedido o palpite do cliente " + clienteTurno);
         for (Map.Entry <String, GamePalitosCliente> cliente : clientesRef.entrySet()) {
             if(cliente.getKey().equals(this.clienteTurno)){
-                cliente.getValue().escolhePalpite();
+                if(verificaEstaNoJogo(cliente.getKey())){
+                    cliente.getValue().escolhePalpite();
+                }
             }
         }
     };
@@ -112,26 +133,28 @@ public class Server extends GamePalitosServerPOA {
     };
 
     public void verificaPalpites(){
-        mensagemBroadCast("");
-        mensagemBroadCast("***************************************");
-        mensagemBroadCast("****** ATUALIZAÇÃO DA ÚLTIMA RODADA****");
-        mensagemBroadCast("***************************************");
-        mensagemBroadCast("");
-        mensagemBroadCast("O número total acumulado foi: " + this.somaPalitos);
+        mensagemBroadCastNoJogo("");
+        mensagemBroadCastNoJogo("***************************************");
+        mensagemBroadCastNoJogo("****** ATUALIZAÇÃO DA ÚLTIMA RODADA****");
+        mensagemBroadCastNoJogo("***************************************");
+        mensagemBroadCastNoJogo("");
+        mensagemBroadCastNoJogo("O número total acumulado foi: " + this.somaPalitos);
         for (Map.Entry <String, Integer> palpiteRodada : clientesPalpites.entrySet()) {
             if (palpiteRodada.getValue().equals(this.somaPalitos)) {
-                mensagemBroadCast("");
-                mensagemBroadCast("O jogador " + palpiteRodada.getKey() + " acertou o palpite e venceu a rodada (1 palito a menos)");
-                mensagemBroadCast("");
+                mensagemBroadCastNoJogo("");
+                mensagemBroadCastNoJogo("O jogador " + palpiteRodada.getKey() + " acertou o palpite e venceu a rodada (1 palito a menos)");
+                mensagemBroadCastNoJogo("");
                 System.out.println("Palpite do cliente " + palpiteRodada.getKey() + " está correto");
                 retiraUmPalito(palpiteRodada.getKey());
                 verificaVenceu(palpiteRodada.getKey());
             }else{
                 System.out.println("Palpite do cliente " + palpiteRodada.getKey() + " está errado");
             }
-            mensagemBroadCast("Palpite do jogador " + palpiteRodada.getKey() + " foi: " + palpiteRodada.getValue() + "| Quantidade de palitos: " + buscaQuantidadePalitos(palpiteRodada.getKey()));
+            mensagemBroadCastNoJogo("Palpite do jogador " + palpiteRodada.getKey() + " foi: " + palpiteRodada.getValue() + " | Quantidade de palitos: " + buscaQuantidadePalitos(palpiteRodada.getKey()));
         }
         if(this.clientesNojogo.size() == 1){
+            this.vencedoresEmOrdem.add(this.clientesNojogo.get(0));
+            this.clientesNojogo.clear();
             lancaFim();
         }else{
             novaRodada();
@@ -156,7 +179,6 @@ public class Server extends GamePalitosServerPOA {
                 break;
             }
         }
-
         return palitos;
     }
 
@@ -173,17 +195,19 @@ public class Server extends GamePalitosServerPOA {
         }
 
         if(numPalitos == 0){
-            mensagemBroadCast("-------");
-            mensagemBroadCast("ATENÇÃO: O jogador " + nomeCliente + " venceu e saiu do jogo");
-            mensagemBroadCast("-------");
+            mensagemBroadCastNoJogo("-------");
+            mensagemBroadCastNoJogo("ATENÇÃO: O jogador " + nomeCliente + " venceu e saiu do jogo");
+            mensagemBroadCastNoJogo("-------");
 
             for(int i=0;i<=this.clientesNojogo.size();i++){
                 if(this.clientesNojogo.get(i).equals(nomeCliente)){
-                    if(this.clienteTurno.equals(nomeCliente)){
-                        this.clienteTurno = this.clientesNojogo.get(i+1);
-                    }
-                    if(this.ultimoClienteJogada.equals(nomeCliente)){
-                        this.ultimoClienteJogada = this.clientesNojogo.get(this.clientesNojogo.size() - 1);
+                    if(this.clientesNojogo.size() > 1){
+                        if(this.clienteTurno.equals(nomeCliente)){
+                            this.clienteTurno = this.clientesNojogo.get(i+1);
+                        }
+                        if(this.ultimoClienteJogada.equals(nomeCliente)){
+                            this.ultimoClienteJogada = this.clientesNojogo.get(this.clientesNojogo.size() - 1);
+                        }
                     }
                     this.vencedoresEmOrdem.add(nomeCliente);
                     this.clientesNojogo.remove(i);
@@ -207,11 +231,11 @@ public class Server extends GamePalitosServerPOA {
     }
 
     public void novaRodada(){
-        mensagemBroadCast("");
-        mensagemBroadCast("***************************************");
-        mensagemBroadCast("************* NOVA RODADA *************");
-        mensagemBroadCast("***************************************");
-        mensagemBroadCast("");
+        mensagemBroadCastNoJogo("");
+        mensagemBroadCastNoJogo("***************************************");
+        mensagemBroadCastNoJogo("************* NOVA RODADA *************");
+        mensagemBroadCastNoJogo("***************************************");
+        mensagemBroadCastNoJogo("");
         reiniciaValores();
         init();
     }
