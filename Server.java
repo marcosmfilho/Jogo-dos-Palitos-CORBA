@@ -10,6 +10,7 @@ import java.util.Scanner;
 public class Server extends GamePalitosServerPOA {
   	private ArrayList<String> clientesNojogo = new ArrayList<String>();
     private ArrayList<String> vencedoresEmOrdem = new ArrayList<String>();
+    private ArrayList<Integer> palpitesDaRodada = new ArrayList<Integer>();
     private Map <String, GamePalitosCliente> clientesRef = new HashMap<String, GamePalitosCliente>();
     private Map <String, Integer> clientesPalpites = new HashMap<String, Integer>();
     private String nomeServidor;
@@ -106,6 +107,11 @@ public class Server extends GamePalitosServerPOA {
         for (Map.Entry <String, GamePalitosCliente> cliente : clientesRef.entrySet()) {
             if(cliente.getKey().equals(this.clienteTurno)){
                 if(verificaEstaNoJogo(cliente.getKey())){
+                    cliente.getValue().novaMensagem("");
+                    cliente.getValue().novaMensagem("***************************************");
+                    cliente.getValue().novaMensagem("*** QUAL SEU PALPITE PARA A RODADA? ***");
+                    cliente.getValue().novaMensagem("***************************************");
+                    cliente.getValue().novaMensagem("");
                     cliente.getValue().escolhePalpite();
                 }
             }
@@ -118,6 +124,7 @@ public class Server extends GamePalitosServerPOA {
         for (Map.Entry <String, GamePalitosCliente> cliente : clientesRef.entrySet()) {
             if (cliente.getKey().equals(nomeCliente.trim())) {
                 this.clientesPalpites.put(nomeCliente,palpite);
+                this.palpitesDaRodada.add(palpite);
                 //Se o cliente foi o último a dar palpite, começa a verificação dos palpites
                 if(nomeCliente.trim().equals(this.ultimoClienteJogada)){
                     alteraTurno();
@@ -129,6 +136,14 @@ public class Server extends GamePalitosServerPOA {
                     pedePalpite(this.clienteTurno);
                 }
             }
+        }
+    };
+
+    public boolean palpiteValido(int palpite){
+        if(this.palpitesDaRodada.contains(palpite)){
+            return false;
+        }else{
+            return true;
         }
     };
 
@@ -263,6 +278,7 @@ public class Server extends GamePalitosServerPOA {
     public void reiniciaValores(){
         this.somaPalitos = 0;
         clientesPalpites.clear();
+        this.palpitesDaRodada.clear();
     };
 
     //Pega a referência do cliente no sevidor de nomes e salva a referência num ArrayList

@@ -14,6 +14,7 @@ module GamePalitos{
 			void verificaVenceu(in string nomeCliente);
 			long buscaQuantidadePalitos(in string nomeCliente);
 			boolean verificaEstaNoJogo(in string nomeCliente);
+			boolean palpiteValido(in long palpite);
 	};
 
 	typedef sequence<string> names;

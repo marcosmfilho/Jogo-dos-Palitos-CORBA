@@ -57,6 +57,7 @@ public class Cliente extends GamePalitosClientePOA{
           System.out.print("Escolha a quantidade de palitos novamente: ");
           escolhePalitos();
       }else{
+          System.out.println("Sucesso! Aguarde a sua vez de dar o palpite...");
           this.server.somaPalitos(palitos);
       }
   };
@@ -70,14 +71,16 @@ public class Cliente extends GamePalitosClientePOA{
   }
 
   public void escolhePalpite(){
-      System.out.println("");
-      System.out.println("***************************************");
-      System.out.println("*** QUAL SEU PALPITE PARA A RODADA? ***");
-      System.out.println("***************************************");
-      System.out.println("");
       Scanner entradaPalpite = new Scanner(System.in);
       int palpite = entradaPalpite.nextInt();
-      this.server.recebePalpite(this.nomeCliente,palpite);
+      if(!this.server.palpiteValido(palpite)){
+        System.out.println("Esse palpite já foi dado na rodada, por favor, escolha outro");
+        System.out.print("Novo palpite: ");
+        escolhePalpite();
+      }else{
+          System.out.println("Palpite enviado com sucesso, aguarde o fim da rodada...");
+          this.server.recebePalpite(this.nomeCliente,palpite);
+      }
   };
 
   // inicializa o cliente e conecta ao servidor
